@@ -27,12 +27,12 @@ what is desired when combining two tables with data that is related in some way.
 
 For that, we need to tell the computer which columns provide the link between the two
 tables using the word `ON`.  What we want is to join the data with the same
-species id.
+raingauge id.
 
     SELECT *
-    FROM surveys
-    JOIN species
-    ON surveys.species_id = species.species_id;
+    FROM raingauge_data
+    JOIN raingauges
+    ON raingauge_data.raingauges_id = raingauges.id;
 
 `ON` is like `WHERE`, it filters things out according to a test condition.  We use
 the `table.colname` format to tell the manager what column in which table we are
@@ -42,29 +42,15 @@ The output of the `JOIN` command will have columns from the first table plus the
 columns from the second table. For the above command, the output will be a table
 that has the following column names:
 
-| record_id | month | day | year | plot_id | species_id | sex | hindfoot_length | weight | species_id | genus | species | taxa |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| ... |||||||||||||   
-| 96  | 8  | 20  | 1997  | 12  | **DM**  |  M |  36  |  41  | **DM** | Dipodomys  | merriami  | Rodent  |
-| ... |||||||||||||| 
+| ID | TR | UT | data | raingauges\_id | update\_ref | invalid | hours\_surrounding\_total | id | name | location_x | location_y | region\_id | reference | ward\_id |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|...|||||||||||||||
+| 3| '17/12/04 10:51' | 1512227700 | 0.2 | 1 | '1512227700' | 0| 1.8 | 1| 'BLUFF RES NO.3' | 31.005075 | -29.933965 |1 | 'bluff3' | 66|
+|...|||||||||||||||
+
 
 Alternatively, we can use the word `USING`, as a short-hand. `USING` only 
-works on columns which share the same name. In this case we are
-telling the manager that we want to combine `surveys` with `species` and that
-the common column is `species_id`.
-
-    SELECT *
-    FROM surveys
-    JOIN species
-    USING (species_id);
-
-The output will only have one **species_id** column
-
-| record_id | month | day | year | plot_id | species_id | sex | hindfoot_length | weight  | genus | species | taxa |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| ... ||||||||||||
-| 96  | 8  | 20  | 1997  | 12  | DM  |  M |  36  |  41  | Dipodomys  | merriami  | Rodent  |
-| ... |||||||||||||
+works on columns which share the same name. 
 
 We often won't want all of the fields from both tables, so anywhere we would
 have used a field name in a non-join query, we can use `table.colname`.
@@ -73,32 +59,37 @@ For example, what if we wanted information on when individuals of each
 species were captured, but instead of their species ID we wanted their
 actual species names.
 
-    SELECT surveys.year, surveys.month, surveys.day, species.genus, species.species
-    FROM surveys
-    JOIN species
-    ON surveys.species_id = species.species_id;
+    SELECT raingauge_data.UT,raingauge_data.data, raingauges.name
+    FROM raingauge_data
+    JOIN raingauges
+    ON raingauge_data.raingauges_id = raingauges.id;
 
-| year | month | day | genus | species |
-|---|---|---|---|---|
-| ... |||||
-| 1977 | 7 | 16 | Neotoma | albigula|
-| 1977 | 7 | 16 | Dipodomys | merriami|
-|...||||||
+| UT | data | name | 
+|---|---|---|
+| ... |||
+| 1512210300 | 0.2 | 'BALLITO' |
+|...|||
 
 Many databases, including SQLite, also support a join through the `WHERE` clause of a query.  
 For example, you may see the query above written without an explicit JOIN.
 
-	SELECT surveys.year, surveys.month, surveys.day, species.genus, species.species
-	FROM surveys, species
-	WHERE surveys.species_id = species.species_id;
+	SELECT raingauge_data.UT,raingauge_data.data, raingauges.name
+    FROM raingauge_data
+    ON raingauge_data.raingauges_id = raingauges.id;
 
 For the remainder of this lesson, we'll stick with the explicit use of the `JOIN` keyword for 
 joining tables in SQL.  
 
 > ## Challenge:
 >
-> - Write a query that returns the genus, the species, and the weight
-> of every individual captured at the site
+> - Write a query that returns the UT, data, ward name, and gauge name
+> >
+> > SELECT raingauge\_data.UT,raingauge\_data.data, raingauges.name, wards.Ward
+    FROM raingauge\_data    
+    JOIN raingauges, wards
+    ON raingauge\_data.raingauges\_id = raingauges.id AND raingauges.ward\_id=wards.ID;
+>  {:.answer}
+> 
 {: .challenge}
 
 ### Different join types
@@ -106,14 +97,14 @@ joining tables in SQL.
 We can count the number of records returned by our original join query.
 
     SELECT COUNT(*)
-    FROM surveys
-    JOIN species
-    USING (species_id);
+    FROM raingauge_data
+    JOIN raingauges
+    USING (id);
 
 Notice that this number is smaller than the number of records present in the
 survey data.
 
-    SELECT COUNT(*) FROM surveys;
+    SELECT COUNT(*) FROM raingauge_data;
 
 This is because, by default, SQL only returns records where the joining value
 is present in the joined columns of both tables (i.e. it takes the _intersection_
@@ -126,10 +117,11 @@ table by using the command `LEFT OUTER JOIN`, or `LEFT JOIN` for short.
 
 > ## Challenge:
 >
-> - Re-write the original query to keep all the entries present in the `surveys`
+> - Re-write the original query to keep all the entries present in the `raingauge_data`
 > table. How many records are returned by this query?
 {: .challenge}
 
+<!--
 > ## Challenge:
 > - Count the number of records in the `surveys` table that have a `NULL` value
 > in the `species_id` column.
@@ -137,29 +129,37 @@ table by using the command `LEFT OUTER JOIN`, or `LEFT JOIN` for short.
 
 Remember: In SQL a `NULL` value in one table can never be joined to a `NULL` value in a
 second table because `NULL` is not equal to anything, not even itself. 
-
+-->
 ### Combining joins with sorting and aggregation
 
 Joins can be combined with sorting, filtering, and aggregation. So, if we
-wanted average mass of the individuals on each different type of treatment, we
+wanted average rainfall of the gauges in each ward, we
 could do something like
 
-    SELECT plots.plot_type, AVG(surveys.weight)
-    FROM surveys
-    JOIN plots
-    ON surveys.plot_id = plots.plot_id
-    GROUP BY plots.plot_type;
+    SELECT wards.Ward,raingauges.name, AVG(raingauge_data.data)
+    FROM raingauge_data
+    JOIN raingauges,wards
+    ON raingauge_data.raingauges_id = raingauges.id AND raingauges.ward_id = wards.id
+    GROUP BY wards.Ward DESC;
 
 > ## Challenge:
 >
-> - Write a query that returns the number of genus of the animals caught in each plot in descending order.
+> - Write a query that returns the number of raingauges in each ward in alphabetical order.
+>> SELECT wards.Ward, COUNT(raingauges.name)
+    FROM raingauges
+    JOIN wards
+    ON raingauges.ward_id = wards.id
+    GROUP BY wards.Ward 
+    ORDER BY wards.Ward;
+> {:.answer}
 {: .challenge}
 
+<!--
 > ## Challenge:
 >
 > - Write a query that finds the average weight of each rodent species (i.e., only include species with Rodent in the taxa field).
 {: .challenge}
-
+-->
 ## Functions `IFNULL` and `NULLIF` and more
 
 SQL includes numerous functions for manipulating data. You've already seen some
@@ -168,6 +168,7 @@ that operate on individual values as well. Probably the most important of these
 are `IFNULL` and `NULLIF`. `IFNULL` allows us to specify a value to use in
 place of `NULL`.
 
+<!--
 We can represent unknown sexes with `'U'` instead of `NULL`:
 
     SELECT species_id, sex, IFNULL(sex, 'U')
@@ -187,8 +188,9 @@ The lone "sex" column is only included in the query above to illustrate where
 > - Write a query that calculates the average hind-foot length of each species,
 > assuming that unknown lengths are 30 (as above).
 {: .challenge}
-
-`IFNULL` can be particularly useful in `JOIN`. When joining the `species` and
+-->
+`IFNULL` can be particularly useful in `JOIN`. 
+<!--When joining the `species` and
 `surveys` tables earlier, some results were excluded because the `species_id`
 was `NULL` in the surveys table. We can use `IFNULL` to include them again, re-writing the `NULL` to
 a valid joining value:
@@ -204,15 +206,16 @@ a valid joining value:
 > plot, using `IFNULL` to assume that unknown species are all of the genus
 > "Rodent".
 {: .challenge}
-
+-->
 The inverse of `IFNULL` is `NULLIF`. This returns `NULL` if the first argument
 is equal to the second argument. If the two are not equal, the first argument
 is returned. This is useful for "nulling out" specific values.
 
-We can "null out" plot 7:
+We can "null out" raingauge 7:
 
-    SELECT species_id, plot_id, NULLIF(plot_id, 7)
-    FROM surveys;
+    SELECT raingauges_id, data, NULLIF(raingauges_id, 7)
+    FROM raingauge_data
+    ORDER BY raingauges_id;
 
 Some more functions which are common to SQL databases are listed in the table
 below:
@@ -237,6 +240,7 @@ table below:
 | `REPLACE(s, f, r)`                  | Returns the string expression *s* in which every occurrence of *f* has been replaced with *r*                                                                                  |
 | `SUBSTR(s, x, y)` or `SUBSTR(s, x)` | Returns the portion of the string expression *s* starting at the character position *x* (leftmost position is 1), *y* characters long (or to the end of *s* if *y* is omitted) |
 
+<!--
 > ## Challenge:
 >
 > Write a query that returns genus names, sorted from longest genus name down
@@ -293,3 +297,4 @@ To practice we have some optional challenges for you.
 > > 8. Solution: `SELECT surveys.species_id, year, AVG(weight) as mean_weight FROM surveys JOIN species ON surveys.species_id=species.species_id WHERE taxa = 'Rodent' GROUP BY surveys.species_id, year`
 > {: .solution}
 {: .challenge}
+-->
