@@ -31,10 +31,8 @@ SQLite Manager.
 # Motivation
 
 To start, let's orient ourselves in our project workflow.  Previously, 
-we used Excel and OpenRefine to go from messy, human created data 
-to cleaned, computer-readable data.  Now we're going to move to the next piece 
-of the data workflow, using the computer to read in our data, and then 
-use it for analysis and visualization.  
+we used Excel and Python to go from messy, human created data 
+to cleaned, computer-readable data.  Now we're going to use another advanced tool to analyze our data: SQL.  
 
 ## What is SQL?
 
@@ -44,27 +42,17 @@ These queries can allow you to perform a number of actions such as: insert, upda
 
 ## Dataset Description
 
-The data we will be using is a time-series for a small mammal community in
-southern Arizona. This is part of a project studying the effects of rodents and
-ants on the plant community that has been running for almost 40 years.  The
-rodents are sampled on a series of 24 plots, with different experimental
-manipulations controlling which rodents are allowed to access which plots.
-
-This is a real dataset that has been used in over 100 publications. We've
-simplified it just a little bit for the workshop, but you can download the
-[full dataset](http://esapubs.org/archive/ecol/E090/118/) and work with it using
-exactly the same tools we'll learn about today.
+The data we will be using is the original eThekwini rainfall dataset. Our previous lessons have focussed on the *rainfall_combined.csv* that was a merge of all the eThekwini's datasets i.e. ward names, regions etc. Now let's download the
+[full dataset](http://esapubs.org/archive/ecol/E090/118/). (You should already have this).
 
 ## Questions
 
-First, let's download and look at some of the cleaned spreadsheets 
-from the 
-[Portal Project dataset](https://figshare.com/articles/Portal_Project_Teaching_Database/1314459).  
 We'll need the following three files: 
 
-* `surveys.csv`
-* `species.csv`
-* `plots.csv`
+* `raingauge_data.csv`
+* `wards.csv`
+* `regions.csv`
+* `raingauges.csv`
 
 > ## Challenge
 >
@@ -72,11 +60,12 @@ We'll need the following three files:
 > What information is contained in each file?  Specifically, if I had 
 > the following research questions: 
 > 
-> * How has the hindfoot length and weight of *Dipodomys* species changed over time?
-> * What is the average weight of each species, per year?  
-> * What information can I learn about *Dipodomys* species in the 2000s, over time?
+> * What is the peak rainfall intensity per raingauge per day?
+> * What is the average rainfall for each gauge, per day?  
+>* What is the peak rainfall intensity per ward per day?
+> * What is the average rainfall for each ward, per day?
 > 
-> What would I need to answer these questions?  Which files have the data I need? What 
+> What would I need to answer these questions?  Which files of the data do I need? What 
 > operations would I need to perform if I were doing these analyses by hand?  
 {: .challenge}
 
@@ -123,11 +112,12 @@ Using a relational database serves several purposes.
 * It's fast, even for large amounts of data.
 * It improves quality control of data entry (type constraints and use of forms in MS Access, Filemaker, Oracle Application Express etc.)
 * The concepts of relational database querying are core to understanding how to do similar things using programming languages such as R or Python.
+* It integrates well with web-based applications, providing the public with NB info.
 
 ## Database Management Systems
 
 There are a number of different database management systems for working with
-relational data. We're going to use SQLite today, but basically everything we
+relational data. We're going to use SQLite today, however everything we
 teach you will apply to the other database systems as well (e.g. MySQL,
 PostgreSQL, MS Access, MS SQL Server, Oracle Database and Filemaker Pro). The 
 only things that will differ are the details of exactly how to import and 
@@ -135,9 +125,9 @@ export data and the [details of data types](#datatypediffs).
 
 ## Relational databases
 
-Let's look at a pre-existing database, the `portal_mammals.sqlite`
+Let's look at a pre-existing database, the `rainfall_combined.sqlite`
 file from the Portal Project dataset that we downloaded during
-[Setup](/sql-ecology-lesson/setup/). Clicking on the "open file" icon, then
+[Setup](''). Clicking on the "open file" icon, then
 find that file and clicking on it will open the database.
 
 You can see the tables in the database by looking at the left hand side of the
@@ -154,7 +144,7 @@ describes the columns, often called *fields*. (The rows of a database table
 are called *records*.)  If you scroll down in the Structure view, you'll 
 see a list of fields, their labels, and their data *type*.  Each field contains 
 one variety or type of data, often numbers or text.  You can see in the 
-`surveys` table that most fields contain numbers (integers) while the `species` 
+`raingauge_data` table that most fields contain numbers (integers) while the `wards` 
 table is nearly all text.  
 
 The "Execute SQL" tab is blank now - this is where we'll be typing our queries 
@@ -189,29 +179,29 @@ follow these instructions:
     - **Database -> New Database**
     - Give a name **Ok -> Open**. Creates the database in the opened folder
 2. Start the import **Database -> Import**
-3. Select the `surveys.csv` file to import
-4. Give the table a name that matches the file name (`surveys`), or use the default
+3. Select the `wards.csv` file to import
+4. Give the table a name that matches the file name (`wards`), or use the default
 5. If the first row has column headings, check the appropriate box
 6. Make sure the delimiter and quotation options are appropriate for the CSV files.  Ensure 'Ignore trailing Separator/Delimiter' is left *unchecked*.
 7. Press **OK**
 8. When asked if you want to modify the table, click **OK**
-9. Set the data types for each field using the suggestions in the table below (this includes fields from `plots` and `species` tables also):
+9. Set the data types for each field using the suggestions in the table below (this includes fields from `regions`, `raingauge_data` and `species` tables also):
 
 | Field             | Data Type      | Motivation                                                                       | Table(s)          |
 |-------------------|:---------------|----------------------------------------------------------------------------------|-------------------|
-| day               | INTEGER        | Having data as numeric allows for meaningful arithmetic and comparisons          | surveys           |
-| genus             | TEXT           | Field contains text data                                                 	| species           |
-| hindfoot_length   | REAL           | Field contains measured numeric data                                             | surveys           |
-| month             | INTEGER        | Having data as numeric allows for meaningful arithmetic and comparisons          | surveys           |
-| plot_id           | INTEGER        | Field contains numeric data	    						| plots, surveys    |
-| plot_type         | TEXT           | Field contains text data                                                 	| plots             |
-| record_id         | INTEGER        | Field contains numeric data 							| surveys           |
-| sex               | TEXT           | Field contains text data                                                 	| surveys           |
-| species_id        | TEXT           | Field contains text data								| species, surveys  |
-| species           | TEXT           | Field contains text data                                                 	| species           |
-| taxa              | TEXT           | Field contains text data                                                 	| species           |
-| weight            | REAL           | Field contains measured numerical data                                           | surveys           |
-| year              | INTEGER        | Allows for meaningful arithmetic and comparisons                                 | surveys           |
+| ID               | INTEGER        | Having data as numeric allows for meaningful arithmetic and comparisons          | all           |
+| TR             | DATETIME           | Field contains datetime data                                                 	| all           |
+| UT   | INTEGER           | Field contains unix timestamp                                             | all           |
+| data             | DOUBLE        | Field containing measured data          | raingauge_data           |
+| *_id         | INTEGER        | Field contains numeric data	    						| raingauge_data, raingauges     |
+| update_ref         | TEXT           | Field contains text data                                                 	| raingauge_data             |
+| invalid         | INTEGER        | Field contains numeric data 							| surveys           |
+| hours\_surrounding\_total              | DOUBLE           | Field contains numeric data                                                 	| raingauge\_data           |
+| name        | TEXT           | Field contains text data								| raingauges  |
+| location\_x,location\_y           | DOUBLE           | Field contains numeric data                                                 	| raingauges           |
+| reference              | TEXT           | Field contains text data                                                 	| raingauges           |
+| Region            | TEXT           | Field contains text data                                           | regions           |
+| Ward              | TEXT        | Field containing text data                                 | wards           |
 
 
 Finally, click **OK** one more time to confirm the operation.
@@ -219,7 +209,7 @@ Finally, click **OK** one more time to confirm the operation.
 
 > ## Challenge
 >
-> - Import the `plots` and `species` tables
+> - Import the `raingauges`, `regions` and `raingauge_data` tables
 {: .challenge}
 
 You can also use this same approach to append new data to an existing table.

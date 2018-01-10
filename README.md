@@ -1,10 +1,9 @@
-# Data Carpentry SQL Lesson for Ecologists
+## Data Carpentry SQL Lessons with Rainfall Data
 
-This repository contains the Data Carpentry SQL material based on ecological
-data. Please see our [contribution guidelines](CONTRIBUTING.md) for information
-on how to contribute updates, bug fixes, or other corrections.
+This repository contains SQL material using rainfall
+data. It is based on the original Data Carpentry SQL Lesson for ecology from January 2018.
 
-## Maintainers
+### Material was adjusted by
 
-* Paula Andrea Martinez ([@orchid00](https://github.com/orchid00))
-* Timothée Poisot ([@tpoisot](https://github.com/tpoisot))
+- Justin Pringle ([@JustinPringle](https://github.com/JustinPringle))
+- Katrin Tirok ([@katrintirok](https://github.com/katrintirok))
