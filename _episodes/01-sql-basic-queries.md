@@ -87,7 +87,7 @@ functions. For example, we could round the values to make them easier to read.
 
 > ## Challenge
 >
-> - Write a query that returns The UT, update-ref, raingauges_id and data in m
+> - Write a query that returns the UT, update_ref, raingauges_id and data in m
 {: .challenge}
 
 ## Filtering
@@ -200,7 +200,7 @@ To be alphabetical, we might want to order by genus then species.
 
 > ## Challenge
 >
-> - Write a query that returns UT,data in cm, raingauge\_id from
+> - Write a query that returns UT, data in cm, raingauge\_id from
 > the raingauge\_data table, sorted with the largest rainfall at the top.
 {: .challenge}
 
@@ -231,9 +231,9 @@ we recommend to put each clause on its own line.
 > ## Challenge
 >
 > - Let's try to combine what we've learned so far in a single
-> query.  Using the raingauge_data table write a query to display the UT field,
-> `raingauges_id`, and data in cm (rounded to two decimal places), for
-> data from UT:1512338400, ordered numerically by the `raingauges_id`.
+> query.  Using the raingauge\_data table write a query to display the UT field,
+> raingauges\_id, and data in cm (rounded to two decimal places), for
+> data from UT:1512338400, ordered numerically by the raingauges\_id.
 > - Write the query as a single line, then put each clause on its own line, and
 > see how more legible the query becomes!
 {: .challenge}
