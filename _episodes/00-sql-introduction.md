@@ -22,16 +22,13 @@ keypoints:
 _Note: this should have been done by participants before the start of the workshop._
 
 We use [SQLite Manager](https://addons.mozilla.org/en-us/firefox/addon/sqlite-manager/)
-and the 
-[Portal Project dataset](https://figshare.com/articles/Portal_Project_Teaching_Database/1314459)
-throughout this lesson. See [Setup](/sql-ecology-lesson/setup/) for
-instructions on how to download the data, and also how to install and open
-SQLite Manager.
+and [rainfall data](https://drive.google.com/drive/folders/15HroRAa6L-asxbyEyUEVyQDCCG6GlYSV) from eThekwini throughout this lesson. 
+
 
 # Motivation
 
 To start, let's orient ourselves in our project workflow.  Previously, 
-we used Excel and Python to go from messy, human created data 
+we used a spreadsheet and Python to go from messy, human created data 
 to cleaned, computer-readable data.  Now we're going to use another advanced tool to analyze our data: SQL.  
 
 ## What is SQL?
@@ -43,7 +40,7 @@ These queries can allow you to perform a number of actions such as: insert, upda
 ## Dataset Description
 
 The data we will be using is the original eThekwini rainfall dataset. Our previous lessons have focussed on the *rainfall_combined.csv* that was a merge of all the eThekwini's datasets i.e. ward names, regions etc. Now let's download the
-[full dataset](http://esapubs.org/archive/ecol/E090/118/). (You should already have this).
+[full dataset](https://drive.google.com/drive/folders/15HroRAa6L-asxbyEyUEVyQDCCG6GlYSV) . (You should already have this).
 
 ## Questions
 
@@ -61,9 +58,9 @@ We'll need the following three files:
 > the following research questions: 
 > 
 > * What is the peak rainfall intensity per raingauge per day?
-> * What is the average rainfall for each gauge, per day?  
+> * What is the daily rainfall for each gauge?  
 >* What is the peak rainfall intensity per ward per day?
-> * What is the average rainfall for each ward, per day?
+> * What is the daily rainfall for each ward?
 > 
 > What would I need to answer these questions?  Which files of the data do I need? What 
 > operations would I need to perform if I were doing these analyses by hand?  
@@ -172,7 +169,7 @@ To summarize:
 
 Before we get started with writing our own queries, we'll create our own 
 database.  We'll be creating this database from the three `csv` files 
-we downloaded earlier.  Close the currently open database and then 
+we downloaded earlier. Close the currently open database and then 
 follow these instructions: 
 
 1. Start a New Database 
@@ -185,7 +182,7 @@ follow these instructions:
 6. Make sure the delimiter and quotation options are appropriate for the CSV files.  Ensure 'Ignore trailing Separator/Delimiter' is left *unchecked*.
 7. Press **OK**
 8. When asked if you want to modify the table, click **OK**
-9. Set the data types for each field using the suggestions in the table below (this includes fields from `regions`, `raingauge_data` and `species` tables also):
+9. Set the data types for each field using the suggestions in the table below (this includes fields from `regions`, `raingauge_data` and `raingauges` tables also):
 
 | Field             | Data Type      | Motivation                                                                       | Table(s)          |
 |-------------------|:---------------|----------------------------------------------------------------------------------|-------------------|
@@ -193,15 +190,14 @@ follow these instructions:
 | TR             | DATETIME           | Field contains datetime data                                                 	| all           |
 | UT   | INTEGER           | Field contains unix timestamp                                             | all           |
 | data             | DOUBLE        | Field containing measured data          | raingauge_data           |
-| *_id         | INTEGER        | Field contains numeric data	    						| raingauge_data, raingauges     |
+| *_id         | INTEGER        | Field contains numeric data	    						| all    |
 | update_ref         | TEXT           | Field contains text data                                                 	| raingauge_data             |
-| invalid         | INTEGER        | Field contains numeric data 							| surveys           |
 | hours\_surrounding\_total              | DOUBLE           | Field contains numeric data                                                 	| raingauge\_data           |
 | name        | TEXT           | Field contains text data								| raingauges  |
 | location\_x,location\_y           | DOUBLE           | Field contains numeric data                                                 	| raingauges           |
 | reference              | TEXT           | Field contains text data                                                 	| raingauges           |
 | Region            | TEXT           | Field contains text data                                           | regions           |
-| Ward              | TEXT        | Field containing text data                                 | wards           |
+| Ward              | TEXT        | Field contains text data                                 | wards           |
 
 
 Finally, click **OK** one more time to confirm the operation.
