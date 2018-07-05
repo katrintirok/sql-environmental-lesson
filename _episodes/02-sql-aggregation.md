@@ -47,7 +47,7 @@ There are many other aggregate functions included in SQL, for example:
 > ## Challenge
 >
 > Write a query that returns: total rainfall, average rainfall, and the min and max rainfall
-> for all raingauges over the duration of the observation perdiod.
+> for all raingauges over the duration of the observation period.
 > Can you modify it so that it outputs these values only for rainfall between 1 mm/5min and 5 mm/5min?
 {: .challenge}
 
@@ -67,7 +67,7 @@ If we want to group by multiple fields, we give `GROUP BY` a comma separated lis
 >
 > 1. How many data entries there are for each UT
 >    
-> 2. Average rainfall of each UT.
+> 2. Average rainfall of each UT
 >
 > Can you modify the above queries combining them into one?
 {: .challenge}
@@ -136,11 +136,11 @@ of these groups (`HAVING`).
 >
 > Write a query that returns, from the `raingauges` table, the number of
 > `raingauges` in each `ward`, only for the `ward` with more than 2 `gauges`.
+>
+>> `SELECT name, COUNT(*) AS number
+>> FROM raingauges GROUP BY ward_id HAVING number>=2`
+> {:.solution}
 {: .challenge}
-
->SELECT name, COUNT(*) AS number
->FROM raingauges GROUP BY ward_id HAVING number>=2
-{:.answer}
 
 ## Saving Queries for Future Use
 
@@ -176,64 +176,3 @@ Using a view we will be able to access these results with a much shorter notatio
     SELECT *
     FROM gauges_10
     WHERE raingauges_id == 5;
-
-<!--## What About NULL?
-
-From the last example, there should only be six records.  If you look at the `weight` column, it's
-easy to see what the average weight would be. If we use SQL to find the
-average weight, SQL behaves like we would hope, ignoring the NULL values:
-
-    SELECT AVG(weight)
-    FROM summer_2000
-    WHERE species_id == 'PE';
-
-But if we try to be extra clever, and find the average ourselves,
-we might get tripped up:
-
-    SELECT SUM(weight), COUNT(*), SUM(weight)/COUNT(*)
-    FROM summer_2000
-    WHERE species_id == 'PE';
-
-Here the `COUNT` command includes all six records (even those with NULL
-values), but the `SUM` only includes the 4 records with data in the
-`weight` field, giving us an incorrect average. However,
-our strategy *will* work if we modify the `COUNT` command slightly:
-
-    SELECT SUM(weight), COUNT(weight), SUM(weight)/COUNT(weight)
-    FROM summer_2000
-    WHERE species_id == 'PE';
-
-When we count the weight field specifically, SQL ignores the records with data
-missing in that field.  So here is one example where NULLs can be tricky:
-`COUNT(*)` and `COUNT(field)` can return different values.
-
-Another case is when we use a "negative" query.  Let's count all the
-non-female animals:
-
-    SELECT COUNT(*)
-    FROM summer_2000
-    WHERE sex != 'F';
-
-Now let's count all the non-male animals:
-
-    SELECT COUNT(*)
-    FROM summer_2000
-    WHERE sex != 'M';
-
-But if we compare those two numbers with the total:
-
-    SELECT COUNT(*)
-    FROM summer_2000;
-
-We'll see that they don't add up to the total! That's because SQL
-doesn't automatically include NULL values in a negative conditional
-statement.  So if we are quering "not x", then SQL divides our data
-into three categories: 'x', 'not NULL, not x' and NULL; then,
-returns the 'not NULL, not x' group. Sometimes this may be what we want -
-but sometimes we may want the missing values included as well! In that
-case, we'd need to change our query to:
-
-    SELECT COUNT(*)
-    FROM summer_2000
-    WHERE sex != 'M' OR sex IS NULL;
--->
