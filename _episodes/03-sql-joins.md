@@ -83,12 +83,13 @@ joining tables in SQL.
 >
 > - Write a query that returns the UT, data, ward name, and raingauge name
 > 
->>
->> `SELECT raingauge_data.UT,raingauge_data.data, raingauges.name, wards.Ward
-    FROM raingauge_data    
-    JOIN raingauges, wards
-    ON raingauge_data.raingauges_id = raingauges.id AND raingauges.ward_id=wards.ID;`
->>
+>> ## Did you get it right?
+>> ```
+>> SELECT raingauge_data.UT,raingauge_data.data, raingauges.name, wards.Ward
+>> FROM raingauge_data
+>> JOIN raingauges, wards
+>> ON raingauge_data.raingauges_id = raingauges.id AND raingauges.ward_id=wards.ID; 
+>> ```
 >  {: .solution}
 {: .challenge}
 
@@ -145,12 +146,15 @@ could do something like
 >
 > - Write a query that returns the number of raingauges in each ward in alphabetical order.
 >
->> `SELECT wards.Ward, COUNT(raingauges.name)
-    FROM raingauges
-    JOIN wards
-    ON raingauges.ward_id = wards.id
-    GROUP BY wards.Ward 
-    ORDER BY wards.Ward;`
+>> ## Did you get it right?
+>> ```
+>> SELECT wards.Ward, COUNT(raingauges.name)
+>> FROM raingauges
+>> JOIN wards
+>> ON raingauges.ward_id = wards.id
+>> GROUP BY wards.Ward 
+>> ORDER BY wards.Ward;
+>> ```
 > {:.solution}
 {: .challenge}
 

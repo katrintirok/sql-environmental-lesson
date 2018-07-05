@@ -137,9 +137,12 @@ of these groups (`HAVING`).
 > Write a query that returns, from the `raingauges` table, the number of
 > `raingauges` in each `ward`, only for the `ward` with more than 2 `gauges`.
 >
->> `SELECT name, COUNT(*) AS number
->> FROM raingauges GROUP BY ward_id HAVING number>=2`
-> {:.solution}
+>> ## Did you get it right?
+>> ```
+>> SELECT name, COUNT(*) AS number
+>> FROM raingauges GROUP BY ward_id HAVING number>=2
+>> ```
+> {: .solution}
 {: .challenge}
 
 ## Saving Queries for Future Use
