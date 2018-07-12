@@ -122,11 +122,6 @@ table by using the command `LEFT OUTER JOIN`, or `LEFT JOIN` for short.
 {: .challenge}
 
 <!--
-> ## Challenge:
-> - Count the number of records in the `surveys` table that have a `NULL` value
-> in the `species_id` column.
-{: .challenge}
-
 Remember: In SQL a `NULL` value in one table can never be joined to a `NULL` value in a
 second table because `NULL` is not equal to anything, not even itself. 
 -->
@@ -158,12 +153,7 @@ could do something like
 > {:.solution}
 {: .challenge}
 
-<!--
-> ## Challenge:
->
-> - Write a query that finds the average weight of each rodent species (i.e., only include species with Rodent in the taxa field).
-{: .challenge}
--->
+
 ## Functions `IFNULL` and `NULLIF` and more
 
 SQL includes numerous functions for manipulating data. You've already seen some
