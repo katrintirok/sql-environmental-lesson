@@ -54,7 +54,7 @@ you would want to do this if you were working with large databases.
 
 ### Unique values
 
-If we want only the unique values so that we can quickly see what species have
+If we want only the unique values so that we can quickly see what raingauges have
 been sampled we use `DISTINCT` 
 
     SELECT DISTINCT raingauges_id
@@ -192,7 +192,7 @@ We could alternately use `DESC` to get descending order.
 `ASC` is the default.
 
 We can also sort on several fields at once.
-To be alphabetical, we might want to order by genus then species.
+We might want to order by ward and then by raingauge name.
 
     SELECT *
     FROM raingauges
@@ -206,14 +206,13 @@ To be alphabetical, we might want to order by genus then species.
 
 ## Order of execution
 
-Another note for ordering. We don’t actually have to display a column to sort by
-it.  For example, let’s say we want to order the birds by their species ID, but
-we only want to see genus and species.
+Another note for ordering. We don’t actually have to display a column to sort by it.  For example, let’s say we want to order the raingauges by their id, but
+we only want to see the name of the raingauges and the ward.
 
     SELECT name, ward_id
     FROM raingauges
     WHERE id >= 10
-    ORDER BY ward_id ASC;
+    ORDER BY id ASC;
 
 We can do this because sorting occurs earlier in the computational pipeline than
 field selection.
